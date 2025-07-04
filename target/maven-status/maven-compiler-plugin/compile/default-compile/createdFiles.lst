@@ -1,0 +1,16 @@
+com\seha\abhomes\service\UserService.class
+com\seha\abhomes\enums\UserRole.class
+com\seha\abhomes\repository\ApartmentRepository.class
+com\seha\abhomes\controller\UserController.class
+com\seha\abhomes\service\BookingService.class
+com\seha\abhomes\config\SecurityConfig.class
+com\seha\abhomes\model\Booking.class
+com\seha\abhomes\controller\ApartmentController.class
+com\seha\abhomes\model\User.class
+com\seha\abhomes\model\Apartment.class
+com\seha\abhomes\repository\UserRepository.class
+com\seha\abhomes\model\Booking$BookingStatus.class
+com\seha\abhomes\service\ApartmentService.class
+com\seha\abhomes\controller\BookingController.class
+com\seha\abhomes\repository\BookingRepository.class
+com\seha\abhomes\AbhomesApplication.class
