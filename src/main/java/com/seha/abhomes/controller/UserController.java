@@ -1,5 +1,8 @@
 package com.seha.abhomes.controller;
 
+import com.seha.abhomes.dto.UserRequestDTO;
+import com.seha.abhomes.dto.UserResponseDTO;
+import com.seha.abhomes.mapper.UserMapper;
 import com.seha.abhomes.model.User;
 import com.seha.abhomes.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,46 +16,52 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRequestDTO userDTO) {
         try {
+            User user = userMapper.toEntity(userDTO);
             User newUser = userService.createUser(user);
-            return ResponseEntity.ok(newUser);
+            return ResponseEntity.ok(userMapper.toResponseDTO(newUser));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable Long id) {
         return userService.getUserById(id)
-                .map(ResponseEntity::ok)
+                .map(user -> ResponseEntity.ok(userMapper.toResponseDTO(user)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<UserResponseDTO> getUserByEmail(@PathVariable String email) {
         return userService.getUserByEmail(email)
-                .map(ResponseEntity::ok)
+                .map(user -> ResponseEntity.ok(userMapper.toResponseDTO(user)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserResponseDTO> getAllUsers() {
+        return userService.getAllUsers().stream()
+                .map(userMapper::toResponseDTO)
+                .toList();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserRequestDTO userDTO) {
         try {
+            User user = userMapper.toEntity(userDTO);
             User updatedUser = userService.updateUser(id, user);
-            return ResponseEntity.ok(updatedUser);
+            return ResponseEntity.ok(userMapper.toResponseDTO(updatedUser));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -69,10 +78,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}/promote")
-    public ResponseEntity<User> promoteToAdmin(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> promoteToAdmin(@PathVariable Long id) {
         try {
             User promotedUser = userService.promoteToAdmin(id);
-            return ResponseEntity.ok(promotedUser);
+            return ResponseEntity.ok(userMapper.toResponseDTO(promotedUser));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
